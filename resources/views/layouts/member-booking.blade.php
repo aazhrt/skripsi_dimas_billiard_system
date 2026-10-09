@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Booking' }} — Billiard Hall</title>
+    <script>(function(){try{var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -22,21 +23,43 @@
 
     <style>
         :root {
-            --felt:       #0d4a2b;
-            --neon:       #39ff8f;
-            --neon-dim:   #22cc68;
-            --neon-glow:  rgba(57,255,143,.35);
-            --amber:      #ffb830;
-            --red:        #ff4444;
-            --red-glow:   rgba(255,68,68,.35);
-            --bg:         #080e0a;
-            --bg-card:    #0e1a12;
-            --bg-card2:   #111f16;
-            --border:     rgba(57,255,143,.12);
-            --border-mid: rgba(57,255,143,.22);
-            --text:       #e8f5ed;
-            --text-dim:   #8aab95;
+            --felt: #0d4a2b;
+            --neon: #0e8a3e;
+            --neon-dim: #0a6b30;
+            --neon-glow: rgba(14, 138, 62, 0.14);
+            --amber: #b77900;
+            --red: #d93636;
+            --red-glow: rgba(217, 54, 54, 0.14);
+            --bg: #f4f7f5;
+            --bg-card: #ffffff;
+            --bg-card2: #ffffff;
+            --border: rgba(15, 31, 20, 0.09);
+            --border-mid: rgba(15, 31, 20, 0.15);
+            --text: #0f1f14;
+            --text-dim: #4a6658;
+            --text-muted: #8aa79a;
+            --nav-bg: rgba(255, 255, 255, 0.82);
+            --card-shadow: 0 4px 24px rgba(15, 31, 20, 0.06);
+        }
+
+        [data-theme="dark"] {
+            --felt: #0d4a2b;
+            --neon: #39ff8f;
+            --neon-dim: #22cc68;
+            --neon-glow: rgba(57, 255, 143, 0.35);
+            --amber: #ffb830;
+            --red: #ff4444;
+            --red-glow: rgba(255, 68, 68, 0.35);
+            --bg: #080e0a;
+            --bg-card: #0e1a12;
+            --bg-card2: #111f16;
+            --border: rgba(57, 255, 143, 0.12);
+            --border-mid: rgba(57, 255, 143, 0.22);
+            --text: #e8f5ed;
+            --text-dim: #8aab95;
             --text-muted: #4d7060;
+            --nav-bg: rgba(8, 14, 10, 0.9);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,7 +93,7 @@
             justify-content: space-between;
             padding: 0 2.5rem;
             height: 60px;
-            background: rgba(8,14,10,.9);
+            background: var(--nav-bg);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
         }
@@ -107,6 +130,48 @@
             border-radius: 100px;
             font-size: .75rem;
             font-family: 'JetBrains Mono', monospace;
+        }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-mid);
+            background: var(--bg-card);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            flex-shrink: 0;
+            transition: all .2s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--neon);
+            color: var(--neon);
+        }
+
+        .booking-card, .table-option-card, .package-option-card, .booking-history-card {
+            box-shadow: var(--card-shadow);
+        }
+        .booking-wrapper .text-white:not(.badge):not(.btn) {
+            color: var(--text) !important;
+        }
+        [data-theme="dark"] .booking-wrapper .text-white:not(.badge):not(.btn) {
+            color: #e8f5ed !important;
+        }
+        .booking-card-header h5 {
+            color: var(--text);
+        }
+        .form-input-custom::placeholder {
+            color: var(--text-muted);
+        }
+        html {
+            transition: background .2s, color .2s;
+        }
+        .table-card-disabled {
+            opacity: .55 !important;
         }
 
         /* Wrapper */
@@ -451,6 +516,7 @@
         <div class="nav-user">
             <a href="{{ route('landing') }}">← Beranda</a>
             <span class="nav-badge">{{ auth()->user()?->name }}</span>
+            <button type="button" class="theme-toggle" id="themeToggleMb" aria-label="Ganti tema" title="Ganti tema">🌙</button>
             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:.875rem;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'">Logout</button>
@@ -472,11 +538,37 @@
     @livewireScripts
 
     <script>
-        // SweetAlert dark theme default
-        const defaultSwal = Swal.mixin({
-            background: '#0e1a12',
-            color: '#e8f5ed',
-        });
+        let defaultSwal;
+        function updateSwalTheme(theme) {
+            defaultSwal = Swal.mixin({
+                background: theme === 'dark' ? '#0e1a12' : '#ffffff',
+                color: theme === 'dark' ? '#e8f5ed' : '#0f1f14',
+            });
+        }
+
+        (function() {
+            var btn = document.getElementById('themeToggleMb');
+            function curTheme() {
+                return document.documentElement.getAttribute('data-theme') || 'light';
+            }
+            function apply(t) {
+                document.documentElement.setAttribute('data-theme', t);
+                try { localStorage.setItem('theme', t); } catch (e) {}
+                if (btn) {
+                    btn.textContent = t === 'dark' ? '☀️' : '🌙';
+                    btn.title = t === 'dark' ? 'Mode terang' : 'Mode gelap';
+                }
+                updateSwalTheme(t);
+            }
+            var initial = 'light';
+            try { initial = localStorage.getItem('theme') || 'light'; } catch (e) {}
+            apply(initial);
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    apply(curTheme() === 'dark' ? 'light' : 'dark');
+                });
+            }
+        })();
     </script>
     {{-- Bootstrap 5 JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

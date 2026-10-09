@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billiard Hall — Booking & Status Meja</title>
     <meta name="description" content="Cek ketersediaan meja billiard secara realtime. Booking mudah, main lebih seru.">
+    <script>(function(){try{var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +28,31 @@
            TOKENS & VARIABLES
         ═══════════════════════════════════════════════════ */
         :root {
+            /* Light — default */
+            --felt: #0d4a2b;
+            --felt-mid: #0f5c33;
+            --felt-light: #1a7a45;
+            --neon: #0e8a3e;
+            --neon-dim: #0a6b30;
+            --neon-glow: rgba(14, 138, 62, 0.14);
+            --amber: #b77900;
+            --amber-glow: rgba(183, 121, 0, 0.18);
+            --red: #d93636;
+            --red-glow: rgba(217, 54, 54, 0.14);
+            --bg: #f4f7f5;
+            --bg-card: #ffffff;
+            --bg-card2: #ffffff;
+            --border: rgba(15, 31, 20, 0.09);
+            --border-mid: rgba(15, 31, 20, 0.15);
+            --text: #0f1f14;
+            --text-dim: #4a6658;
+            --text-muted: #8aa79a;
+            --nav-bg: rgba(255, 255, 255, 0.82);
+            --card-shadow: 0 4px 24px rgba(15, 31, 20, 0.06);
+            --hero-glow: rgba(13, 74, 43, 0.07);
+        }
+
+        [data-theme="dark"] {
             --felt: #0d4a2b;
             --felt-mid: #0f5c33;
             --felt-light: #1a7a45;
@@ -45,6 +71,9 @@
             --text: #e8f5ed;
             --text-dim: #8aab95;
             --text-muted: #4d7060;
+            --nav-bg: rgba(8, 14, 10, 0.85);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            --hero-glow: rgba(13, 74, 43, 0.7);
         }
 
         /* ═══════════════════════════════════════════════════
@@ -96,7 +125,7 @@
             justify-content: space-between;
             padding: 0 2.5rem;
             height: 64px;
-            background: rgba(8, 14, 10, 0.85);
+            background: var(--nav-bg);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
         }
@@ -112,6 +141,33 @@
 
         .nav-logo span {
             color: var(--text-dim);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-mid);
+            background: var(--bg-card);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--neon);
+            color: var(--neon);
         }
 
         .nav-links {
@@ -174,7 +230,7 @@
             transform: translate(-50%, -50%);
             width: 700px;
             height: 400px;
-            background: radial-gradient(ellipse, rgba(13, 74, 43, 0.7) 0%, transparent 70%);
+            background: radial-gradient(ellipse, var(--hero-glow) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -443,6 +499,7 @@
         }
 
         .meja-card {
+            box-shadow: var(--card-shadow);
             background: var(--bg-card2);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -802,6 +859,7 @@
         }
 
         .package-card {
+            box-shadow: var(--card-shadow);
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -900,6 +958,7 @@
         }
 
         .step-card {
+            box-shadow: var(--card-shadow);
             text-align: center;
             padding: 2rem 1.25rem;
             background: var(--bg-card2);
@@ -1051,6 +1110,10 @@
                 padding: 0 1.25rem;
             }
 
+            .nav-actions {
+                gap: 0.5rem;
+            }
+
             .nav-links li:not(:last-child) {
                 display: none;
             }
@@ -1088,24 +1151,27 @@
 ══════════════════════════════════════════════════ --}}
     <nav>
         <a href="/" class="nav-logo">BILLIARD<span>HALL</span></a>
-        <ul class="nav-links">
-            <li><a href="#status-meja">Status Meja</a></li>
-            <li><a href="#paket">Paket</a></li>
-            <li><a href="#cara-booking">Cara Booking</a></li>
-            @auth
-                @role('member')
-                    <li><a href="{{ route('member.booking.index') }}" class="nav-cta">Booking Saya</a></li>
-                @endrole
-                @role('owner')
-                    <li><a href="{{ route('owner.dashboard') }}" class="nav-cta">Dashboard</a></li>
-                @endrole
-                @role('kasir')
-                    <li><a href="{{ route('kasir.dashboard') }}" class="nav-cta">Dashboard Kasir</a></li>
-                @endrole
-            @else
-                <li><a href="{{ route('login') }}" class="nav-cta">Login / Booking</a></li>
-            @endauth
-        </ul>
+        <div class="nav-actions">
+            <ul class="nav-links">
+                <li><a href="#status-meja">Status Meja</a></li>
+                <li><a href="#paket">Paket</a></li>
+                <li><a href="#cara-booking">Cara Booking</a></li>
+                @auth
+                    @role('member')
+                        <li><a href="{{ route('member.booking.index') }}" class="nav-cta">Booking Saya</a></li>
+                    @endrole
+                    @role('owner')
+                        <li><a href="{{ route('owner.dashboard') }}" class="nav-cta">Dashboard</a></li>
+                    @endrole
+                    @role('kasir')
+                        <li><a href="{{ route('kasir.dashboard') }}" class="nav-cta">Dashboard Kasir</a></li>
+                    @endrole
+                @else
+                    <li><a href="{{ route('login') }}" class="nav-cta">Login / Booking</a></li>
+                @endauth
+            </ul>
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Ganti tema" title="Ganti tema">🌙</button>
+        </div>
     </nav>
 
     {{-- ══════════════════════════════════════════════════
@@ -1311,6 +1377,25 @@
     @livewireScripts
 
     <script>
+        (function() {
+            var btn = document.getElementById('themeToggle');
+            function apply(t) {
+                document.documentElement.setAttribute('data-theme', t);
+                try { localStorage.setItem('theme', t); } catch (e) {}
+                if (btn) {
+                    btn.textContent = t === 'dark' ? '☀️' : '🌙';
+                    btn.title = t === 'dark' ? 'Mode terang' : 'Mode gelap';
+                }
+            }
+            try { apply(localStorage.getItem('theme') || 'light'); } catch (e) { apply('light'); }
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    var cur = document.documentElement.getAttribute('data-theme') || 'light';
+                    apply(cur === 'dark' ? 'light' : 'dark');
+                });
+            }
+        })();
+
         // Smooth scroll untuk nav links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
