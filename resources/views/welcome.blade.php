@@ -1051,8 +1051,12 @@
                 padding: 0 1.25rem;
             }
 
-            .nav-links {
+            .nav-links li:not(:last-child) {
                 display: none;
+            }
+
+            .nav-links {
+                display: flex;
             }
 
             .stats-bar {

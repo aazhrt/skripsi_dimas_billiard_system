@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: billiard-db
+    restart: unless-stopped
+    env_file:
+      - /root/skripsi_dimas_billiard_system/.env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - billiard-db-data:/var/lib/mysql
+    networks:
+      - app
+
+  php:
+    build:
+      context: .docker/php
+      dockerfile: Dockerfile
+    container_name: billiard-php
+    restart: unless-stopped
+    env_file:
+      - /root/skripsi_dimas_billiard_system/.env
+    volumes:
+      - ../:/var/www
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - db
+    networks:
+      - app
+
+  queue:
+    build:
+      context: .docker/php
+      dockerfile: Dockerfile
+    container_name: billiard-queue
+    restart: unless-stopped
+    env_file:
+      - /root/skripsi_dimas_billiard_system/.env
+    command: php artisan queue:work --tries=3 --timeout=90
+    volumes:
+      - ../:/var/www
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - php
+    networks:
+      - app
+
+  scheduler:
+    build:
+      context: .docker/php
+      dockerfile: Dockerfile
+    container_name: billiard-scheduler
+    restart: unless-stopped
+    env_file:
+      - /root/skripsi_dimas_billiard_system/.env
+    command: php artisan schedule:work
+    volumes:
+      - ../:/var/www
+    depends_on:
+      - php
+    networks:
+      - app
+
+  reverb:
+    build:
+      context: .docker/php
+      dockerfile: Dockerfile
+    container_name: billiard-reverb
+    restart: unless-stopped
+    env_file:
+      - /root/skripsi_dimas_billiard_system/.env
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    volumes:
+      - ../:/var/www
+    depends_on:
+      - php
+    networks:
+      - app
+
+  nginx:
+    image: nginx:alpine
+    container_name: billiard-nginx
+    restart: unless-stopped
+    volumes:
+      - ../public:/var/www/public:ro
+      - ./.docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - php
+    networks:
+      - app
+
+networks:
+  app:
+    name: proxy_network
+    external: true
+
+volumes:
+  billiard-db-data:
+    name: billiard-db-data

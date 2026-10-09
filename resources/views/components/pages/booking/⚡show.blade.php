@@ -79,8 +79,9 @@ new #[Layout('layouts.app', ['title' => 'Detail Booking', 'breadcrumbs' => [['ti
         $this->dispatch('notify', message: 'Booking berhasil ditolak.', type: 'success');
     }
 
-    public function createBilling(\App\Services\BillingSessionManager $sessionManager)
+    public function createBilling(?\App\Services\BillingSessionManager $sessionManager = null)
     {
+        $sessionManager = $sessionManager ?? app(\App\Services\BillingSessionManager::class);
         try {
             $sessionManager->start([
                 'booking_id' => $this->booking->id,

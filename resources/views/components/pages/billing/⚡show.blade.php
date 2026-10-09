@@ -133,8 +133,9 @@ new #[Layout('layouts.app', ['title' => 'Detail Billing', 'breadcrumbs' => [
 
     // ── FINISH BILLING ───────────────────────────────────────
 
-    public function finishBilling(\App\Services\BillingSessionManager $sessionManager, bool $auto = false): void
+    public function finishBilling(?\App\Services\BillingSessionManager $sessionManager = null, bool $auto = false): void
     {
+        $sessionManager = $sessionManager ?? app(\App\Services\BillingSessionManager::class);
         if (!$this->billing->isActive()) return;
 
         // Validasi pembayaran (hanya jika bukan auto-finish)
@@ -182,8 +183,9 @@ new #[Layout('layouts.app', ['title' => 'Detail Billing', 'breadcrumbs' => [
 
     // ── PERPANJANG WAKTU ─────────────────────────────────────
 
-    public function extendBilling(\App\Services\BillingSessionManager $sessionManager): void
+    public function extendBilling(?\App\Services\BillingSessionManager $sessionManager = null): void
     {
+        $sessionManager = $sessionManager ?? app(\App\Services\BillingSessionManager::class);
         if (!$this->billing->isActive() || !$this->billing->scheduled_end_at) return;
 
         $this->validate(['extendHours' => 'required|integer|min:1'], [

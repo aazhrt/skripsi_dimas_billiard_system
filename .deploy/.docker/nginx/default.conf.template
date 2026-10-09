@@ -1,0 +1,57 @@
+map $http_x_forwarded_proto $https_flag {
+    default off;
+    https on;
+}
+
+upstream php-backend {
+    server php:9000;
+}
+
+upstream reverb-backend {
+    server reverb:8080;
+}
+
+server {
+    listen 80;
+    index index.php index.html;
+    root /var/www/public;
+
+    client_max_body_size 100M;
+
+    location /app {
+        proxy_pass http://reverb-backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php-backend;
+        fastcgi_read_timeout 3600;
+        fastcgi_index index.php;
+        fastcgi_param HTTPS $https_flag;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        send_timeout 3600;
+        proxy_connect_timeout 3600;
+        proxy_read_timeout 3600;
+        proxy_send_timeout 3600;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}

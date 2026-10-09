@@ -48,6 +48,20 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
+        @if ($errors->any())
+            <div class="alert alert-danger mb-3 py-2">
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="alert alert-info mb-3 py-2">
+                {{ session('status') }}
+            </div>
+        @endif
         <div class="row">
             <div class="col-lg-12">
                 <div class="form-group">

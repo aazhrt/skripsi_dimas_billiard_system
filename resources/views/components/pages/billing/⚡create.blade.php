@@ -230,8 +230,9 @@ new #[Layout('layouts.app', ['title' => 'Tambah Billing Walk-In', 'breadcrumbs' 
 
     // ── SIMPAN BILLING ────────────────────────────────────────
 
-    public function save(\App\Services\BillingSessionManager $sessionManager): void
+    public function save(?\App\Services\BillingSessionManager $sessionManager = null): void
     {
+        $sessionManager = $sessionManager ?? app(\App\Services\BillingSessionManager::class);
         $this->validate([
             'guest_name' => 'required|string|min:2|max:100',
             'table_id'   => 'required|exists:tables,id',
