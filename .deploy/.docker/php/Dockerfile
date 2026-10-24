@@ -5,16 +5,16 @@ RUN apt-get update && apt-get install -y curl gnupg2 ca-certificates --no-instal
   && curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/sury.gpg \
   && apt-get update \
   && apt-get install -y \
-    php8.2-fpm \
-    php8.2-mysql \
-    php8.2-zip \
-    php8.2-intl \
-    php8.2-mbstring \
-    php8.2-xml \
-    php8.2-curl \
-    php8.2-bcmath \
-    php8.2-gd \
-    php8.2-pdo \
+    php8.3-fpm \
+    php8.3-mysql \
+    php8.3-zip \
+    php8.3-intl \
+    php8.3-mbstring \
+    php8.3-xml \
+    php8.3-curl \
+    php8.3-bcmath \
+    php8.3-gd \
+    php8.3-pdo \
     default-mysql-client git \
     --no-install-recommends \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -32,9 +32,11 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME=/composer \
     PATH=$PATH:/composer/vendor/bin
 
-RUN sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 0.0.0.0:9000|' /etc/php/8.2/fpm/pool.d/www.conf \
-  && sed -i '/^listen.allowed_clients/s/^/;/' /etc/php/8.2/fpm/pool.d/www.conf
+RUN git config --global --add safe.directory /var/www
+
+RUN sed -i 's|listen = /run/php/php8.3-fpm.sock|listen = 0.0.0.0:9000|' /etc/php/8.3/fpm/pool.d/www.conf \
+  && sed -i '/^listen.allowed_clients/s/^/;/' /etc/php/8.3/fpm/pool.d/www.conf
 
 EXPOSE 9000
-CMD ["php-fpm8.2", "-F"]
+CMD ["php-fpm8.3", "-F"]
 WORKDIR /var/www
