@@ -6,7 +6,7 @@ services:
     container_name: billiard-db
     restart: unless-stopped
     env_file:
-      - /root/skripsi_dimas_billiard_system/.env
+      - ../.env
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -15,7 +15,10 @@ services:
     volumes:
       - billiard-db-data:/var/lib/mysql
     networks:
-      - app
+      app:
+        aliases:
+          - db
+          - billiard-db
 
   php:
     build:
@@ -24,7 +27,7 @@ services:
     container_name: billiard-php
     restart: unless-stopped
     env_file:
-      - /root/skripsi_dimas_billiard_system/.env
+      - ../.env
     volumes:
       - ../:/var/www
     extra_hosts:
@@ -41,7 +44,7 @@ services:
     container_name: billiard-queue
     restart: unless-stopped
     env_file:
-      - /root/skripsi_dimas_billiard_system/.env
+      - ../.env
     command: php artisan queue:work --tries=3 --timeout=90
     volumes:
       - ../:/var/www
@@ -59,7 +62,7 @@ services:
     container_name: billiard-scheduler
     restart: unless-stopped
     env_file:
-      - /root/skripsi_dimas_billiard_system/.env
+      - ../.env
     command: php artisan schedule:work
     volumes:
       - ../:/var/www
@@ -75,7 +78,7 @@ services:
     container_name: billiard-reverb
     restart: unless-stopped
     env_file:
-      - /root/skripsi_dimas_billiard_system/.env
+      - ../.env
     command: php artisan reverb:start --host=0.0.0.0 --port=8080
     volumes:
       - ../:/var/www
@@ -94,7 +97,10 @@ services:
     depends_on:
       - php
     networks:
-      - app
+      app:
+        aliases:
+          - billiard-nginx
+          - billiard-prod-nginx
 
 networks:
   app:
