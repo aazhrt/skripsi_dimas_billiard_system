@@ -4,11 +4,11 @@ map $http_x_forwarded_proto $https_flag {
 }
 
 upstream php-backend {
-    server php:9000;
+    server billiard-php:9000;
 }
 
 upstream reverb-backend {
-    server reverb:8080;
+    server billiard-reverb:8080;
 }
 
 server {
