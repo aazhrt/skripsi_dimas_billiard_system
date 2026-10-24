@@ -8,7 +8,15 @@ Aplikasi ini sudah terhubung secara seamless antara **Laptop lokal**, **GitHub**
 
 Di laptop Anda (`/Users/azhr/orca/projects/billiard-system`), telah terkonfigurasi 2 remote:
 - **`origin`** : `https://github.com/aazhrt/skripsi_dimas_billiard_system.git` (Repository GitHub Anda)
-- **`server`** : `ssh://root@43.134.89.165/root/skripsi_dimas_billiard_system` (Server Production)
+- **`server`** : `billiard-aws:/var/www/billiard-system` (Server Production AWS EC2)
+
+Host SSH `billiard-aws` terkonfigurasi di `~/.ssh/config`:
+```ssh
+Host billiard-aws
+    HostName ec2-100-54-212-156.compute-1.amazonaws.com
+    User admin
+    IdentityFile ~/Downloads/fyodor-aws.pem
+```
 
 Branch aktif: **`production`** (kode live yang berjalan di server).
 
@@ -56,5 +64,5 @@ git push origin production
 
 ## 4. Akses Aplikasi
 - Domain Web: [https://billiard-system.azhr.cloud](https://billiard-system.azhr.cloud)
-- Server Host: `ssh root@43.134.89.165`
-- Path Server: `/root/skripsi_dimas_billiard_system`
+- Server Host: `ssh billiard-aws` (atau `ssh -i ~/Downloads/fyodor-aws.pem admin@ec2-100-54-212-156.compute-1.amazonaws.com`)
+- Path Server: `/var/www/billiard-system`

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Remote Deployment & Management Script for Billiard System
-# Server: root@43.134.89.165
+# Server: billiard-aws (admin@ec2-100-54-212-156.compute-1.amazonaws.com)
 # ==============================================================================
 
 set -e
 
-SERVER_HOST="root@43.134.89.165"
-SERVER_PATH="/root/skripsi_dimas_billiard_system"
+SERVER_HOST="billiard-aws"
+SERVER_PATH="/var/www/billiard-system"
 CURRENT_BRANCH=$(git branch --show-current)
 
 # Helper function
