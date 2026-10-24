@@ -79,6 +79,6 @@ git push server "$CURRENT_BRANCH"
 
 # 4. Trigger reload & cache clear di server
 info "3/3 Optimizing cache & restarting workers on server..."
-ssh "$SERVER_HOST" "docker exec billiard-php php artisan optimize:clear && docker restart billiard-queue billiard-reverb >/dev/null 2>&1"
+ssh "$SERVER_HOST" "docker exec billiard-php chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache && docker exec billiard-php chmod -R 775 /var/www/storage /var/www/bootstrap/cache && docker exec -u www-data billiard-php php artisan optimize:clear && docker restart billiard-queue billiard-reverb >/dev/null 2>&1"
 
 success "Deployment selesai! Aplikasi berjalan di https://billiard-system.azhr.cloud"

@@ -97,10 +97,10 @@ new #[Layout('layouts.member-booking', ['title' => 'Booking Saya'])] class exten
                 <div>
                     <div class="bk-code">{{ $bk->booking_code }}</div>
                     <div class="bk-date">
-                        {{ $bk->scheduled_date?->format('d M Y') }} &bull;
-                        {{ \Carbon\Carbon::parse($bk->scheduled_start)->format('H:i') }}
+                        {{ $bk->scheduled_date?->format('d M Y') ?? '-' }} &bull;
+                        {{ $bk->scheduled_start ? \Carbon\Carbon::parse($bk->scheduled_start)->format('H:i') : '-' }}
                         –
-                        {{ \Carbon\Carbon::parse($bk->scheduled_end)->format('H:i') }}
+                        {{ $bk->scheduled_end ? \Carbon\Carbon::parse($bk->scheduled_end)->format('H:i') : '-' }}
                     </div>
                 </div>
                 <span class="bk-status-badge" style="color:{{ $st['color'] }}; border-color:{{ $st['color'] }};">
@@ -119,7 +119,7 @@ new #[Layout('layouts.member-booking', ['title' => 'Booking Saya'])] class exten
                 </div>
                 <div>
                     <div class="bk-meta-label">Dibuat</div>
-                    <div class="bk-meta-value">{{ $bk->created_at->format('d M Y, H:i') }}</div>
+                    <div class="bk-meta-value">{{ $bk->created_at?->format('d M Y, H:i') ?? '-' }}</div>
                 </div>
             </div>
 
