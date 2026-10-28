@@ -42,11 +42,14 @@ class BillingAutoFinishTest extends TestCase
         $table->update(['status' => 'available']);
         $pricing = Pricing::first() ?? Pricing::factory()->create(['type' => 'regular', 'price_per_hour' => 30000]);
 
+        $this->actingAs($this->kasir);
+
         $manager = app(\App\Services\BillingSessionManager::class);
         $billing = $manager->start([
             'table_id'   => $table->id,
             'guest_name' => 'Test Grace Period Guest',
             'pricing_id' => $pricing->id,
+            'started_by' => $this->kasir->id,
         ]);
 
         $billing->update([
