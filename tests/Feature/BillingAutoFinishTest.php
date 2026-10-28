@@ -39,20 +39,21 @@ class BillingAutoFinishTest extends TestCase
     public function test_billing_show_auto_finishes_when_grace_period_exceeded(): void
     {
         $table = Table::first() ?? Table::factory()->create(['status' => 'available']);
-        $table->update(['status' => 'occupied', 'device_status' => true]);
-
         $pricing = Pricing::first() ?? Pricing::factory()->create(['type' => 'regular', 'price_per_hour' => 30000]);
 
-        $billing = Billing::create([
-            'table_id'         => $table->id,
-            'cashier_id'       => $this->kasir->id,
-            'pricing_id'       => $pricing->id,
-            'guest_name'       => 'Test Grace Period Guest',
-            'type'             => 'open',
-            'start_time'       => now()->subMinutes(66),
+        $manager = app(\App\Services\BillingSessionManager::class);
+        $billing = $manager->startWalkIn(
+            table: $table,
+            type: 'open',
+            durationHours: 1,
+            package: null,
+            pricing: $pricing,
+            guestName: 'Test Grace Period Guest'
+        );
+
+        $billing->update([
+            'started_at'       => now()->subMinutes(66),
             'scheduled_end_at' => now()->subMinutes(6),
-            'status'           => 'active',
-            'total_amount'     => 30000,
         ]);
 
         try {
