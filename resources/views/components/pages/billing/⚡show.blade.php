@@ -69,7 +69,7 @@ new #[Layout('layouts.app', ['title' => 'Detail Billing', 'breadcrumbs' => [
 
             // Auto-finish jika melewati 5 menit grace period
             if (now()->greaterThanOrEqualTo($this->billing->scheduled_end_at->copy()->addMinutes(5))) {
-                $this->finishBilling(auto: true);
+                $this->finishBilling(app(\App\Services\BillingSessionManager::class), auto: true);
             }
         } else {
             $this->isTimeUp = false;

@@ -318,22 +318,22 @@ new #[Layout('layouts.member-booking', ['title' => 'Buat Booking'])] class exten
 
                 @if ($this->allTables->isEmpty())
                     <div class="text-center py-5 text-muted">
-                        <i class="fa-solid fa-circle-xmark fa-2x mb-3" style="color:#ff4444;"></i>
+                        <i class="fa-solid fa-circle-xmark fa-2x mb-3" style="color:var(--red);"></i>
                         <p>Tidak ada meja yang terdaftar saat ini.<br>Silakan hubungi admin.</p>
                     </div>
                 @else
                     {{-- Legend status --}}
                     <div class="d-flex gap-3 mb-3 flex-wrap">
                         <span class="d-flex align-items-center gap-1" style="font-size:.78rem;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--neon);display:inline-block;"></span>
                             <span class="text-success">Tersedia</span>
                         </span>
                         <span class="d-flex align-items-center gap-1" style="font-size:.78rem;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span>
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;"></span>
                             <span class="text-danger">Sedang Terpakai</span>
                         </span>
                         <span class="d-flex align-items-center gap-1" style="font-size:.78rem;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block;"></span>
                             <span class="text-warning">Dalam Perbaikan</span>
                         </span>
                     </div>
@@ -364,7 +364,7 @@ new #[Layout('layouts.member-booking', ['title' => 'Buat Booking'])] class exten
                                             </span>
                                         @elseif($isOccupied)
                                             <span style="
-                                                background:rgba(239,68,68,.12);
+                                                background:rgba(217,54,54,.08);
                                                 color:var(--red);
                                                 border:1px solid rgba(239,68,68,.25);
                                                 font-size:.7rem;
