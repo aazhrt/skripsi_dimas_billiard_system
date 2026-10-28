@@ -70,7 +70,7 @@ class BillingAutoFinishTest extends TestCase
             $this->assertNotEquals('active', $billing->status);
             $this->assertFalse((bool) $table->device_status);
         } finally {
-            $billing->payments()->delete();
+            $billing->payment?->delete();
             $billing->delete();
             $table->update(['status' => 'available', 'device_status' => false]);
         }
